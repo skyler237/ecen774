@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/skyler/school/ecen631/state_plotter/src/state_plotter')
+sys.path.insert(0, '/home/skyler/school/ecen774/state_plotter/src/state_plotter')
 rm_python2 = []
 for p in sys.path:
     if p.find('python2') != -1:

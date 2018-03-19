@@ -1,0 +1,3 @@
+[submodule "state_plotter"]
+	path = state_plotter
+	url = https://magiccvs.byu.edu/gitlab/lab/state_plotter.git
