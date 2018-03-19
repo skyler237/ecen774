@@ -1,5 +1,12 @@
 import sys
 sys.path.insert(0, '/home/skyler/school/ecen631/state_plotter/src/state_plotter')
+rm_python2 = []
+for p in sys.path:
+    if p.find('python2') != -1:
+        rm_python2.append(p)
+for p in rm_python2:
+    sys.path.remove(p)
+
 from Plotter import Plotter
 import math
 import numpy as np
@@ -64,7 +71,9 @@ class OrbitAnalysis:
         self.dt = 0.01
         self.ode_int_N = 2
 
-        self.plotter = OrbitPlotter(plotting_freq=10)
+        sec_per_update = 1.0
+        freq = sec_per_update/self.dt
+        self.plotter = OrbitPlotter(plotting_freq=freq)
 
         # Initial conditions
         t0 = 0
@@ -107,7 +116,7 @@ def angle_wrap(x):
 
 if __name__ == "__main__":
     analysis = OrbitAnalysis()
-    cv2.namedWindow("Pause = SPACE")
+    cv2.namedWindow("SPACE = pause, ESC = exit")
 
     paused = False
 
