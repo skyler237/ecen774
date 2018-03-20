@@ -1,0 +1,228 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Definitions
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\az}{\alpha_{az}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\azdot}{\dot{\az}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\atan}{\tan^{-1}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\partialdd}[2][]{\frac{\partial#1}{\partial#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\dd}[2][]{\frac{d#1}{d#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\sat}[3]{\text{sat}\left(#1,#2,#3\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+State Vectors
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+
+\begin_inset Formula $=$
+\end_inset
+
+
+\begin_inset Formula $\begin{pmatrix}x\\
+y\\
+\psi\\
+\az\\
+R
+\end{pmatrix}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{u}$
+\end_inset
+
+
+\begin_inset Formula $=\begin{pmatrix}\phi_{c}\end{pmatrix}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Dynamics - Constant Velocity
+\end_layout
+
+\begin_layout Subsection
+R dynamics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+x_{r} & = & x-x_{t}\\
+y_{r} & = & y-y_{t}\\
+\dot{x} & = & V_{a}\cos(\psi)\\
+\dot{y} & = & V_{a}\sin(\psi)\\
+R & = & \sqrt{x_{r}^{2}+y_{r}^{2}}\\
+\dot{R} & = & \frac{d}{dt}R\\
+ & = & \frac{\partial R}{\partial x_{r}}\frac{\partial x_{r}}{\partial t}+\frac{\partial R}{\partial y_{r}}\frac{\partial y_{r}}{\partial t}\\
+ & = & \frac{1}{2\sqrt{x_{r}^{2}+y_{r}^{2}}}\cdot2x_{r}\cdot\left(V_{a}\cos(\psi)-v_{x_{t}}\right)+\frac{1}{2\sqrt{x_{r}^{2}+y_{r}^{2}}}\cdot2y_{r}\cdot\left(V_{a}\sin(\psi)-v_{y_{t}}\right)\\
+ & = & \frac{x_{r}\cdot\left(V_{a}\cos(\psi)-v_{x_{t}}\right)}{R}+\frac{y_{r}\cdot\left(V_{a}\cos(\psi)-v_{y_{t}}\right)}{R}\\
+ & = & \frac{1}{R}\left(V_{a}\left(x_{r}\cos(\psi)+y_{r}\sin(\psi)\right)-x_{r}v_{x_{t}}-y_{r}v_{y_{t}}\right)\\
+ & = & \frac{V_{a}}{R}\left(x_{r}\cos(\psi)+y_{r}\sin(\psi)\right)-\frac{x_{r}v_{x_{t}}+y_{r}v_{y_{t}}}{R}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Azimuth Dynamics
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\dot{\psi} & = & \frac{g}{V_{a}}\tan(\phi)\\
+\az & = & \pi+\atan\left(\frac{y_{r}}{x_{r}}\right)-\psi\\
+\azdot & = & \frac{d}{dt}\az\\
+ & = & \partialdd[\az]{x_{r}}\dd[x_{r}]t+\partialdd[\az]{y_{r}}\dd[x_{r}]t+\partialdd[\az]{\psi}\dd[\psi]t\\
+ & = & \frac{1}{1+\frac{y_{r}^{2}}{x_{r}^{2}}}\cdot-\frac{y_{r}}{x_{r}^{2}}\cdot\left(V_{a}\cos(\psi)-v_{x_{t}}\right)+\frac{1}{1+\frac{y_{r}^{2}}{x_{r}^{2}}}\cdot\frac{1}{x_{r}}\cdot\left(V_{a}\sin(\psi)-v_{y_{t}}\right)-\frac{g}{V_{a}}\tan(\phi)\\
+ & = & \frac{-y_{r}}{x_{r}^{2}+y_{r}^{2}}\cdot\left(V_{a}\cos(\psi)-v_{x_{t}}\right)+\frac{x_{r}}{x_{r}^{2}+y_{r}^{2}}\cdot\left(V_{a}\sin(\psi)-v_{y_{t}}\right)-\frac{g}{V_{a}}\tan(\phi)\\
+ & = & \frac{V_{a}\left(x_{r}\sin(\psi)-y_{r}\cos(\psi)\right)+y_{r}v_{x_{t}}-x_{r}v_{y_{t}}}{R^{2}}-\frac{g}{V_{a}}\tan(\phi)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Control Approaches
+\end_layout
+
+\begin_layout Subsection
+Current control approach 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi_{ff} & = & \atan\left(\frac{V_{a}^{2}}{gR_{d}}\right)\\
+e_{R} & = & \sat{R_{d}-R}{-R_{max}}{R_{max}}\\
+e_{az} & = & \frac{\pi}{2}-|\az|\\
+\phi_{c} & = & \sat{\lambda\left(\phi_{ff}-k_{az}e_{az}-k_{R}e_{R}\right)}{-\phi_{max}}{\phi_{max}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
