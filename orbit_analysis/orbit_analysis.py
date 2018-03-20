@@ -52,22 +52,27 @@ class OrbitPlotter:
         self.az_thresh_reached = False
 
     def _define_plots(self):
-        plots = ['y x y_t x_t -2d',     '_R R_error',
-                 '_psi',         '_az az_error',
-                 'phi_c'
+        plots = ['y_r x_r y_t_r x_t_r -2d', 'y x y_t x_t -2d',
+                 '_R R_error',      '_az az_error',
+                 'phi_c',      '_psi',
                  ]
         return plots
 
     def _define_input_vectors(self):
-        self.plotter.define_input_vector("state", ['x', 'y', 'psi', 'az', 'R'])
+        self.plotter.define_input_vector("state", ['x_r', 'y_r', 'psi', 'az', 'R'])
+        self.plotter.define_input_vector("actual_pos", ['x', 'y'])
         self.plotter.define_input_vector("target_pos", ['x_t', 'y_t'])
+        self.plotter.define_input_vector("target_rel_pos", ['x_t_r', 'y_t_r'])
 
     def update(self, state, R_c, az_c, phi_c, target_pos, t):
-        x, y, psi, az, R = state
+        x_r, y_r, psi, az, R = state
 
         self.plotter.add_vector_measurement("state", state, t)
+        actual_pos = [x_r + target_pos[0], y_r + target_pos[1]]
+        self.plotter.add_vector_measurement("actual_pos", actual_pos, t)
         self.plotter.add_measurement("phi_c", phi_c, t, rad2deg=True)
         self.plotter.add_vector_measurement("target_pos", target_pos, t)
+        self.plotter.add_vector_measurement("target_rel_pos", [0, 0], t)
         R_err = R - R_c
         if not self.R_thresh_reached and abs(R_err) < self.R_err_thresh:
             print("R error threshold ({0}) reached at t={1}".format(self.R_err_thresh, t))
@@ -83,7 +88,6 @@ class OrbitPlotter:
 class OrbitAnalysis:
     def __init__(self):
         self.Va = 20.0
-        self.h = 100.0
         self.g = 9.81
         self.phi_c = 0
 
@@ -103,13 +107,13 @@ class OrbitAnalysis:
         R0 = math.sqrt(x0**2 + y0**2)
         self.state = [x0, y0, psi0, az0, R0]
         self.target_pos = np.array([0., 0.])
-        self.target_vel = np.array([2.0, 0.])
+        self.target_vel = np.array([3.0, 0.])
         self.t = t0
 
         # Orbit control params
         self.R_desired = 100.0
         self.lam = -1.0 # 1=CW, -1=CCW
-        az_to_R_ratio = 0.02027
+        az_to_R_ratio = 0.0202
         self.kp_az = 2.3
         self.kp_R = az_to_R_ratio*self.kp_az
         self.radius_max_error = 70.0
@@ -120,7 +124,7 @@ class OrbitAnalysis:
         time = np.linspace(self.t, self.t + self.dt, self.ode_int_N)
         # Integrate states
         states = odeint(self._ode, self.state, time)
-        # self.target_pos += self.target_vel*self.dt
+        self.target_pos += self.target_vel*self.dt
         # Update control
         self.update_control()
         # Update time
@@ -136,18 +140,19 @@ class OrbitAnalysis:
 
         az = abs(az)
         phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
-        radius_error = sat(self.R_desired - R, -self.radius_max_error, self.radius_max_error)
-        phi_c = self.lam*(phi_ff - self.kp_az*(math.pi/2.0 - az) - self.kp_R*radius_error)
+        radius_error = sat(R - self.R_desired, -self.radius_max_error, self.radius_max_error)
+        phi_c = self.lam*(phi_ff - self.kp_az*(math.pi/2.0 - az) + self.kp_R*radius_error)
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
 
     def _ode(self, state, t):
         x, y, psi, az, R = state
+        vx_t, vy_t = self.target_vel
 
-        xdot = self.Va*math.cos(psi)
-        ydot = self.Va*math.sin(psi)
+        xdot = self.Va*math.cos(psi) - vx_t
+        ydot = self.Va*math.sin(psi) - vy_t
         psidot = self.g/self.Va*math.tan(self.phi_c)
-        azdot = self.Va/R**2 * (x*math.sin(psi) - y*math.cos(psi)) - self.g/self.Va*math.tan(self.phi_c)
-        Rdot = self.Va/R * (x*math.cos(psi) + y*math.sin(psi))
+        azdot = (self.Va * (x*math.sin(psi) - y*math.cos(psi)) + y*vx_t - x*vy_t)/R**2  - self.g/self.Va*math.tan(self.phi_c)
+        Rdot = self.Va/R * (x*math.cos(psi) + y*math.sin(psi)) - (x*vx_t + y*vy_t)/R
 
         return [xdot, ydot, psidot, azdot, Rdot]
 
