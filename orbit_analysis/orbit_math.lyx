@@ -214,14 +214,44 @@ Current control approach
 \begin_inset Formula 
 \begin{eqnarray*}
 \phi_{ff} & = & \atan\left(\frac{V_{a}^{2}}{gR_{d}}\right)\\
-e_{R} & = & \sat{R_{d}-R}{-R_{max}}{R_{max}}\\
+e_{R} & = & \sat{R-R_{d}}{-R_{max}}{R_{max}}\\
 e_{az} & = & \frac{\pi}{2}-|\az|\\
-\phi_{c} & = & \sat{\lambda\left(\phi_{ff}-k_{az}e_{az}-k_{R}e_{R}\right)}{-\phi_{max}}{\phi_{max}}
+\phi_{c} & = & \sat{\lambda\left(\phi_{ff}+k_{R}e_{R}-k_{az}e_{az}\right)}{-\phi_{max}}{\phi_{max}}
 \end{eqnarray*}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is the direction of the orbit
+\end_layout
+
+\begin_layout Standard
+Observations:
+\end_layout
+
+\begin_layout Itemize
+With a constant velocity target, this control approach converges to the
+ orbit, but has a steady state sinusoid error.
+ The sinusoid seems to be proportional to the ratio of target speed to MAV
+ speed and inversely proportional to the desired orbit radius.
+\end_layout
+
+\begin_layout Section
+Nonlinear Analysis
+\end_layout
+
+\begin_layout Subsection
+Objectives
+\end_layout
+
+\begin_layout Itemize
+Drive radius and azimuth errors to zero.
 \end_layout
 
 \end_body
