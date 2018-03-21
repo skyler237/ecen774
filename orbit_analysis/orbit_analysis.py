@@ -12,6 +12,7 @@ import math
 import numpy as np
 import cv2
 from scipy.integrate import odeint
+from PID import PID
 
 ## *GPS-denied Orbit Control Analysis*
 ## State equations:
@@ -114,9 +115,15 @@ class OrbitAnalysis:
         self.R_desired = 100.0
         self.lam = -1.0 # 1=CW, -1=CCW
         az_to_R_ratio = 0.0202
-        self.kp_az = 2.3
-        self.kp_R = az_to_R_ratio*self.kp_az
-        self.radius_max_error = 70.0
+        kp_az = 3.0
+        kp_R = 0.02
+        kd_az = 1.0
+        kd_R = 0.5
+        ki_az = 0.0
+        ki_R = 0.0
+        self.az_PID = PID(kp_az, kd_az, ki_az)
+        self.R_PID = PID(kp_R, kd_R, ki_R)
+        self.radius_max_error = 30.0
         self.phi_c_max = math.radians(45.0)
 
     def propagate(self):
@@ -138,10 +145,15 @@ class OrbitAnalysis:
     def update_control(self):
         x, y, psi, az, R = self.state
 
-        az = abs(az)
+        az_err = abs(az) - math.pi/2.0
+        phi_az = self.az_PID.compute_control_error(az_err, self.dt)
+
+        R_err = sat(R - self.R_desired, -self.radius_max_error, self.radius_max_error)
+        phi_R = self.R_PID.compute_control_error(R_err, self.dt)
+
         phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
-        radius_error = sat(R - self.R_desired, -self.radius_max_error, self.radius_max_error)
-        phi_c = self.lam*(phi_ff - self.kp_az*(math.pi/2.0 - az) + self.kp_R*radius_error)
+
+        phi_c = self.lam*(phi_ff + phi_R + phi_az)
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
 
     def _ode(self, state, t):

@@ -69,7 +69,7 @@
 \begin_body
 
 \begin_layout Standard
-Definitions
+Math Macros:
 \end_layout
 
 \begin_layout Standard
@@ -202,6 +202,102 @@ Azimuth Dynamics
 
 \end_layout
 
+\begin_layout Subsection
+Center Dynamics
+\end_layout
+
+\begin_layout Standard
+It might be easier to think of commanding roll to achieve a specific center,
+ rather than just distance and azimuth angle.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+C^{body} & = & \left(\begin{array}{c}
+x_{c}\\
+y_{c}\\
+R_{c}
+\end{array}\right)=\left(\begin{array}{c}
+0\\
+R\\
+\frac{V_{a}^{2}}{g\tan\phi}
+\end{array}\right)\\
+E^{body} & = & \left(\begin{array}{c}
+x_{c}-x_{t}\\
+y_{c}-y_{t}\\
+R_{c}-R_{t}
+\end{array}\right)\\
+ & =
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $x_{c}$
+\end_inset
+
+and 
+\begin_inset Formula $y_{c}$
+\end_inset
+
+are the position of the orbit's center and 
+\begin_inset Formula $R_{c}$
+\end_inset
+
+ is the radius, 
+\begin_inset Formula $x_{t}$
+\end_inset
+
+, 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+ are the positions of the target in the body frame and 
+\begin_inset Formula $R_{t}$
+\end_inset
+
+ is the horizontal distance between the MAV and the target.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $C^{world}=\left(\begin{array}{c}
+x_{c}\\
+y_{c}\\
+R
+\end{array}\right)=\left(\begin{array}{c}
+x+R\sin\psi\\
+y+R\cos\psi\\
+\frac{V_{a}^{2}}{g\tan\phi}
+\end{array}\right)$
+\end_inset
+
+
+\begin_inset Formula 
+\begin{eqnarray*}
+\dot{C^{world}} & = & \left(\begin{array}{c}
+\dot{x_{c}}\\
+\dot{y_{c}}\\
+\dot{R}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+\dot{x}+\dot{R}\sin\psi+R\cos\psi\dot{\psi}\\
+\dot{y}+\dot{R}\cos\psi-R\sin\psi\dot{\psi}\\
+-\frac{V_{a}^{2}}{g\tan^{2}\phi}\sec^{2}\phi
+\end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Control Approaches
 \end_layout
@@ -215,8 +311,8 @@ Current control approach
 \begin{eqnarray*}
 \phi_{ff} & = & \atan\left(\frac{V_{a}^{2}}{gR_{d}}\right)\\
 e_{R} & = & \sat{R-R_{d}}{-R_{max}}{R_{max}}\\
-e_{az} & = & \frac{\pi}{2}-|\az|\\
-\phi_{c} & = & \sat{\lambda\left(\phi_{ff}+k_{R}e_{R}-k_{az}e_{az}\right)}{-\phi_{max}}{\phi_{max}}
+e_{az} & = & |\az|-\frac{\pi}{2}\\
+\phi_{c} & = & \sat{\lambda\left(\phi_{ff}+k_{R}e_{R}+k_{az}e_{az}\right)}{-\phi_{max}}{\phi_{max}}
 \end{eqnarray*}
 
 \end_inset
@@ -240,6 +336,27 @@ With a constant velocity target, this control approach converges to the
  orbit, but has a steady state sinusoid error.
  The sinusoid seems to be proportional to the ratio of target speed to MAV
  speed and inversely proportional to the desired orbit radius.
+\end_layout
+
+\begin_layout Subsection
+Rate control
+\end_layout
+
+\begin_layout Subsubsection
+Brainstorming
+\end_layout
+
+\begin_layout Standard
+Rather than controlling the error of the azimuth and radius, it might be
+ beneficial to try to control the rates 
+\begin_inset Formula $\azdot$
+\end_inset
+
+and 
+\begin_inset Formula $\dot{R}$
+\end_inset
+
+ to zero.
 \end_layout
 
 \begin_layout Section
