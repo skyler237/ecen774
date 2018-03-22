@@ -74,6 +74,14 @@ Math Macros:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\el}{\alpha_{el}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
 \newcommand{\az}{\alpha_{az}}
 \end_inset
 
@@ -221,7 +229,7 @@ y_{c}\\
 R_{c}
 \end{array}\right)=\left(\begin{array}{c}
 0\\
-R\\
+R_{c}\\
 \frac{V_{a}^{2}}{g\tan\phi}
 \end{array}\right)\\
 E^{body} & = & \left(\begin{array}{c}
@@ -229,7 +237,16 @@ x_{c}-x_{t}\\
 y_{c}-y_{t}\\
 R_{c}-R_{t}
 \end{array}\right)\\
- & =
+ & = & \left(\begin{array}{c}
+-R_{t}\cos(\az)\\
+R_{c}-R_{t}\sin(\az)\\
+R_{c}-\frac{h}{\tan(\el)}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+-\frac{h}{\tan(\el)}\cos(\az)\\
+\frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}\sin(\az)\\
+\frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}
+\end{array}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -262,7 +279,17 @@ are the position of the orbit's center and
 \begin_inset Formula $R_{t}$
 \end_inset
 
- is the horizontal distance between the MAV and the target.
+ is the horizontal distance between the UAV and the target.
+ Also, 
+\begin_inset Formula $\az$
+\end_inset
+
+ and 
+\begin_inset Formula $\el$
+\end_inset
+
+ are the angles of the LOS vector between the UAV and the target in the
+ body frame.
 \end_layout
 
 \begin_layout Standard
@@ -357,6 +384,19 @@ and
 \end_inset
 
  to zero.
+\end_layout
+
+\begin_layout Subsection
+Arctan Farfield Decay
+\end_layout
+
+\begin_layout Standard
+In order to obtain a stable gain that is most effective in the nearfield,
+ but still crosses through the origin, I could use a function like: 
+\begin_inset Formula $y=-a/(\left|(b\cdot x)\right|+c)\cdot\arctan(x\cdot d)\cdot\left|\arctan\left(f\cdot x\right)\right|$
+\end_inset
+
+ where a,b,c,d, and f are constants.
 \end_layout
 
 \begin_layout Section
