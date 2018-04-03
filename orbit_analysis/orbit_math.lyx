@@ -82,6 +82,14 @@ Math Macros:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\eldot}{\dot{\el}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
 \newcommand{\az}{\alpha_{az}}
 \end_inset
 
@@ -91,6 +99,54 @@ Math Macros:
 \begin_layout Standard
 \begin_inset FormulaMacro
 \newcommand{\azdot}{\dot{\az}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\x}{\mathbf{x}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\xdot}{\dot{\x}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vxtb}{v_{x_{t}}^{b}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vxtw}{v_{x_{t}}^{w}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vytw}{v_{y_{t}}^{w}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vytb}{v_{y_{t}}^{b}}
 \end_inset
 
 
@@ -211,6 +267,95 @@ Azimuth Dynamics
 \end_layout
 
 \begin_layout Subsection
+Full World Dynamics
+\end_layout
+
+\begin_layout Standard
+This is just an attempt to understand all of the dynamics, including a constant
+ velocity target.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\x & = & \left(\begin{array}{c}
+x^{w}\\
+y^{w}\\
+\psi\\
+x_{t}^{w}\\
+y_{t}^{w}\\
+R_{t}\\
+\az\\
+\el
+\end{array}\right)\\
+\xdot & = & \left(\begin{array}{c}
+V_{a}\cos\psi\\
+V_{a}\sin\psi\\
+\frac{g}{V_{a}}\tan\phi\\
+v_{x_{t}}\\
+v_{y_{t}}\\
+\frac{V_{a}}{R}\left(\left(x-x_{t}\right)\cos(\psi)+\left(y-y_{t}\right)\sin(\psi)\right)-\frac{\left(x-x_{t}\right)v_{x_{t}}+\left(y-y_{t}\right)v_{y_{t}}}{R}\\
+\frac{V_{a}\left(\left(x-x_{t}\right)\sin(\psi)-\left(y-y_{t}\right)\cos(\psi)\right)+\left(y-y_{t}\right)v_{x_{t}}-\left(x-x_{t}\right)v_{y_{t}}}{R^{2}}-\frac{g}{V_{a}}\tan(\phi)\\
+\frac{-\dot{R}}{R^{2}+h^{2}}
+\end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Body Dynamics
+\end_layout
+
+\begin_layout Standard
+Body frame version of full dynamics above.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\x^{b} & = & \left(\begin{array}{c}
+x_{t}^{b}\\
+y_{t}^{b}\\
+\psi\\
+R_{t}\\
+\az\\
+\el
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+\left(x_{t}^{w}-x^{w}\right)\cos\psi+\left(y_{t}^{w}-y^{w}\right)\sin\psi\\
+-\left(x_{t}^{w}-x^{w}\right)\sin\psi+\left(y_{t}^{w}-y^{w}\right)\cos\psi\\
+\psi\\
+R_{t}\\
+\az\\
+\el
+\end{array}\right)\\
+\dot{x_{t}^{b}} & = & \left(\vxtw-V_{a}\cos\psi\right)\cos\psi-\left(x_{t}^{w}-x^{w}\right)\sin(\psi)\dot{\psi}+\left[\left(\vytw-V_{a}\sin\psi\right)\sin\psi+\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\dot{\psi}\right]\\
+ & = & \vxtw\cos\psi+\vytw\sin\psi-V_{a}-\dot{\psi}\left[\left(x_{t}^{w}-x^{w}\right)\sin(\psi)-\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\right]\\
+ & = & \vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}y_{t}^{b}\\
+\dot{y_{t}^{b}} & = & -\left(\vxtw-V_{a}\cos\psi\right)\sin\psi-\left(x_{t}^{w}-x^{w}\right)\cos(\psi)\dot{\psi}+\left[\left(\vytw-V_{a}\sin\psi\right)\cos\psi-\left(y_{t}^{w}-y^{w}\right)\sin(\psi)\dot{\psi}\right]\\
+ & = & -\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}\left[\left(x_{t}^{w}-x^{w}\right)\cos(\psi)+\left(y_{t}^{w}-y^{w}\right)\sin(\psi)\right]\\
+ & = & -\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}x_{t}^{b}\\
+\xdot^{b} & = & \left(\begin{array}{c}
+\vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}y_{t}^{b}\\
+-\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}x_{t}^{b}\\
+\frac{g}{V_{a}}\tan\phi\\
+\frac{V_{a}}{R}\left(\left(x-x_{t}\right)\cos(\psi)+\left(y-y_{t}\right)\sin(\psi)\right)-\frac{\left(x-x_{t}\right)v_{x_{t}}+\left(y-y_{t}\right)v_{y_{t}}}{R}\\
+\frac{V_{a}\left(\left(x-x_{t}\right)\sin(\psi)-\left(y-y_{t}\right)\cos(\psi)\right)+\left(y-y_{t}\right)v_{x_{t}}-\left(x-x_{t}\right)v_{y_{t}}}{R^{2}}-\frac{g}{V_{a}}\tan(\phi)\\
+\frac{-\dot{R}}{R^{2}+h^{2}}
+\end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
 Center Dynamics
 \end_layout
 
@@ -235,18 +380,41 @@ R_{c}\\
 E^{body} & = & \left(\begin{array}{c}
 x_{c}-x_{t}\\
 y_{c}-y_{t}\\
-R_{c}-R_{t}
+R_{c}-R_{t}\\
+\az\\
+\azdot\\
+\el\\
+\dot{\el}
 \end{array}\right)\\
  & = & \left(\begin{array}{c}
 -R_{t}\cos(\az)\\
 R_{c}-R_{t}\sin(\az)\\
-R_{c}-\frac{h}{\tan(\el)}
+R_{c}-\frac{h}{\tan(\el)}\\
+\az\\
+\frac{g}{V_{a}}\tan\phi\\
+\el\\
+\dot{\el}
 \end{array}\right)\\
  & = & \left(\begin{array}{c}
 -\frac{h}{\tan(\el)}\cos(\az)\\
 \frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}\sin(\az)\\
 \frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}
-\end{array}\right)
+\end{array}\right)\\
+\dot{R_{t}} & = & \frac{-h\dot{\el}}{\sin^{2}(\el)},\hspace{1em}\el\neq0\\
+\dot{R_{c}} & = & \begin{cases}
+\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)} & \phi\neq0\\
+0 & \phi=0
+\end{cases}\\
+E^{body} & = & \left(\begin{array}{c}
+-\dot{R_{t}}\cos(\az)+R_{t}\sin(\az)\azdot\\
+\dot{R_{c}}-\dot{R_{t}}\sin(\az)-R_{t}\cos(\az)\azdot\\
+\dot{R_{c}}-\dot{R_{t}}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+\frac{h\dot{\el}}{\sin^{2}(\el)}\cos(\az)+\frac{h}{\tan(\el)}\sin(\az)\azdot\\
+\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\frac{h\dot{\el}}{\sin^{2}(\el)}\sin(\az)-\frac{h}{\tan(\el)}\cos(\az)\azdot\\
+\frac{h\dot{\el}}{\sin^{2}(\el)}-\frac{V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}
+\end{array}\right)\\
 \end{eqnarray*}
 
 \end_inset
