@@ -347,6 +347,14 @@ R_{t}\\
 \frac{V_{a}}{R}\left(\left(x-x_{t}\right)\cos(\psi)+\left(y-y_{t}\right)\sin(\psi)\right)-\frac{\left(x-x_{t}\right)v_{x_{t}}+\left(y-y_{t}\right)v_{y_{t}}}{R}\\
 \frac{V_{a}\left(\left(x-x_{t}\right)\sin(\psi)-\left(y-y_{t}\right)\cos(\psi)\right)+\left(y-y_{t}\right)v_{x_{t}}-\left(x-x_{t}\right)v_{y_{t}}}{R^{2}}-\frac{g}{V_{a}}\tan(\phi)\\
 \frac{-\dot{R}}{R^{2}+h^{2}}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+\vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}y_{t}^{b}\\
+-\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}x_{t}^{b}\\
+\frac{g}{V_{a}}\tan\phi\\
+\frac{-V_{a}x_{t}^{b}}{R}-\frac{\left(x-x_{t}^{w}\right)v_{x_{t}}+\left(y-y_{t}^{w}\right)v_{y_{t}}}{R}\\
+\frac{V_{a}y_{t}^{b}+\left(y-y_{t}^{w}\right)v_{x_{t}}^{w}-\left(x-x_{t}^{w}\right)v_{y_{t}}^{w}}{R^{2}}-\frac{g}{V_{a}}\tan(\phi)\\
+\frac{-\dot{R}}{R^{2}+h^{2}}
 \end{array}\right)
 \end{eqnarray*}
 
@@ -378,43 +386,43 @@ R_{c}\\
 \frac{V_{a}^{2}}{g\tan\phi}
 \end{array}\right)\\
 E^{body} & = & \left(\begin{array}{c}
-x_{c}-x_{t}\\
-y_{c}-y_{t}\\
-R_{c}-R_{t}\\
+x_{c}-x_{t}^{b}\\
+y_{c}-y_{t}^{b}\\
+R_{d}-R_{t}\\
 \az\\
-\azdot\\
-\el\\
-\dot{\el}
-\end{array}\right)\\
- & = & \left(\begin{array}{c}
--R_{t}\cos(\az)\\
-R_{c}-R_{t}\sin(\az)\\
-R_{c}-\frac{h}{\tan(\el)}\\
-\az\\
-\frac{g}{V_{a}}\tan\phi\\
-\el\\
-\dot{\el}
+\el
 \end{array}\right)\\
  & = & \left(\begin{array}{c}
 -\frac{h}{\tan(\el)}\cos(\az)\\
 \frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}\sin(\az)\\
-\frac{V_{a}^{2}}{g\tan\phi}-\frac{h}{\tan(\el)}
+R_{d}-\frac{h}{\tan(\el)}
 \end{array}\right)\\
 \dot{R_{t}} & = & \frac{-h\dot{\el}}{\sin^{2}(\el)},\hspace{1em}\el\neq0\\
-\dot{R_{c}} & = & \begin{cases}
+\dot{R_{c}} & = & \frac{-V_{a}^{2}}{g\tan^{2}\phi}\sec^{2}(\phi)\dot{\phi}\\
+ &  & \begin{cases}
 \frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)} & \phi\neq0\\
 0 & \phi=0
 \end{cases}\\
-E^{body} & = & \left(\begin{array}{c}
+\dot{E^{body}} & = & \left(\begin{array}{c}
 -\dot{R_{t}}\cos(\az)+R_{t}\sin(\az)\azdot\\
 \dot{R_{c}}-\dot{R_{t}}\sin(\az)-R_{t}\cos(\az)\azdot\\
-\dot{R_{c}}-\dot{R_{t}}
+-\dot{R_{t}}
 \end{array}\right)\\
  & = & \left(\begin{array}{c}
 \frac{h\dot{\el}}{\sin^{2}(\el)}\cos(\az)+\frac{h}{\tan(\el)}\sin(\az)\azdot\\
 \frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\frac{h\dot{\el}}{\sin^{2}(\el)}\sin(\az)-\frac{h}{\tan(\el)}\cos(\az)\azdot\\
-\frac{h\dot{\el}}{\sin^{2}(\el)}-\frac{V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}
+\frac{h\dot{\el}}{\sin^{2}(\el)}
 \end{array}\right)\\
+\dot{E^{body}} & = & \left(\begin{array}{c}
+-\left(\vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}y_{t}^{b}\right)\\
+\dot{R_{c}}-\left(-\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}x_{t}^{b}\right)\\
+-\dot{R_{t}}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+-\vxtw\cos\psi-\vytw\sin\psi+V_{a}-\dot{\psi}y_{t}^{b}\\
+\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin\psi-\vytw\cos\psi+\dot{\psi}x_{t}^{b}\\
+\frac{-V_{a}x_{t}^{b}}{R_{t}}-\frac{\left(x-x_{t}^{w}\right)v_{x_{t}}+\left(y-y_{t}^{w}\right)v_{y_{t}}}{R_{t}}
+\end{array}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -486,6 +494,45 @@ y+R\cos\psi\\
 \dot{y}+\dot{R}\cos\psi-R\sin\psi\dot{\psi}\\
 -\frac{V_{a}^{2}}{g\tan^{2}\phi}\sec^{2}\phi
 \end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Consolidated Error dynamics
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\dot{E^{body}} & = & \left(\begin{array}{c}
+-\vxtw\cos\psi-\vytw\sin\psi+V_{a}-\dot{\psi}y_{t}^{b}\\
+\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin\psi-\vytw\cos\psi+\dot{\psi}x_{t}^{b}\\
+\frac{-V_{a}x_{t}^{b}}{R_{t}}-\frac{\left(x-x_{t}^{w}\right)v_{x_{t}}+\left(y-y_{t}^{w}\right)v_{y_{t}}}{R_{t}}
+\end{array}\right)\\
+ & = & \left(\begin{array}{c}
+\dot{e_{1}}\\
+\dot{e_{2}}\\
+\dot{e_{3}}
+\end{array}\right)\\
+\text{constants} & = & \text{\vxtw, \vytw, V_{a}, g, h, R_{d}}\\
+y_{t}^{b} & = & R_{c}-e_{2}\\
+x_{t}^{b} & = & -e_{1}\\
+R_{t} & = & R_{d}-e_{3}\\
+\text{START OVER HERE}\\
+R_{t} & = & \sqrt{x_{t}^{b2}+y_{t}^{b2}}\\
+ & = & \sqrt{e_{1}^{2}+R_{c}^{2}-2R_{c}e_{2}+e_{2}^{2}}\\
+ & = & \sqrt{e_{1}^{2}+e_{2}^{2}+e_{3}^{2}+2R_{t}e_{3}+R_{t}^{2}-2e_{3}e_{2}+2R_{t}e_{2}}\\
+R_{t}^{2} & = & e_{1}^{2}+e_{2}^{2}+e_{3}^{2}+2R_{t}e_{3}+R_{t}^{2}-2e_{3}e_{2}+2R_{t}e_{2}\\
+2R_{t}\left(e_{2}+e_{3}\right) & = & -\left(e_{1}^{2}+e_{2}^{2}+e_{3}^{2}-2e_{3}e_{2}\right)\\
+R_{t} & = & \frac{-\left(e_{1}^{2}+e_{2}^{2}+e_{3}^{2}-2e_{3}e_{2}\right)}{2\left(e_{2}+e_{3}\right)}\\
+R_{c} & = & e_{3}-\frac{\left(e_{1}^{2}+e_{2}^{2}+e_{3}^{2}-2e_{3}e_{2}\right)}{2\left(e_{2}+e_{3}\right)}\\
+ & = & \frac{2e_{2}e_{3}+2e_{3}^{2}}{2\left(e_{2}+e_{3}\right)}-\frac{\left(e_{1}^{2}+e_{2}^{2}+e_{3}^{2}-2e_{3}e_{2}\right)}{2\left(e_{2}+e_{3}\right)}\\
+ & = & \frac{4e_{2}e_{3}-e_{1}^{2}-e_{2}^{2}+e_{3}^{2}}{2\left(e_{2}+e_{3}\right)}
 \end{eqnarray*}
 
 \end_inset
