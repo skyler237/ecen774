@@ -148,13 +148,49 @@ class OrbitAnalysis:
         az_err = abs(az) - math.pi/2.0
         phi_az = self.az_PID.compute_control_error(az_err, self.dt)
 
-        R_err = sat(R - self.R_desired, -self.radius_max_error, self.radius_max_error)
+        R_err = R - self.R_desired
+        # Adapt gains based on distance
+        R_gains = self.get_R_gains(R_err)
+        self.R_PID.set_gains(*R_gains)
+        # Compute control
         phi_R = self.R_PID.compute_control_error(R_err, self.dt)
+        print("R_err = {0}".format(R_err))
+        print("R_gains = {0}".format(R_gains))
+        print("phi_R = {0}".format(phi_R))
 
         phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
         phi_c = self.lam*(phi_ff + phi_R + phi_az)
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
+
+    def get_R_gains(self, R_err):
+        kp_R_switch = 10.0
+        kp_R_blend_rate = 0.3
+        kp_R_near = lambda e: 0.05*abs(e)
+        kp_R_far = lambda e: 0.005
+        kp_R = self.blend_func(R_err, kp_R_near, kp_R_far, kp_R_switch, kp_R_blend_rate)
+
+        kd_R_switch = 00.0
+        kd_R_blend_rate = 0.3
+        kd_R_near = lambda e: 0.05*abs(e)
+        kd_R_far = lambda e: 0.005
+        kd_R = self.blend_func(R_err, kd_R_near, kd_R_far, kd_R_switch, kd_R_blend_rate)
+
+        ki_R = 0
+
+        return [kp_R, kd_R, ki_R]
+
+    def blend_func(self, x, f1, f2, x_blend, rate):
+        sigma = self.sigmoid(x, x_blend, rate)
+        near = f1(x)
+        far = f2(x)
+        blended = (1-sigma)*near + sigma*far
+        return blended
+
+    def sigmoid(self, alpha, alpha0, M):
+        top = 1.0 + math.exp(-M*(alpha - alpha0)) + math.exp(M*(alpha+alpha0))
+        bottom = (1.0 + math.exp(-M*(alpha - alpha0)))*(1.0 + math.exp(M*(alpha+alpha0)))
+        return top/bottom
 
     def _ode(self, state, t):
         x, y, psi, az, R = state

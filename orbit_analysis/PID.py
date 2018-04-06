@@ -15,6 +15,14 @@ class PID:
 
         self.angle_wrap = angle_wrap
 
+    def set_gains(self, kp=None, kd=None, ki=None):
+        if kp is not None:
+            self.kp = kp
+        if kd is not None:
+            self.kd = kd
+        if ki is not None:
+            self.ki = ki
+
     def compute_control(self, x, x_c, dt):
         # Get the error
         error = x_c - x
