@@ -29,7 +29,7 @@ class PID:
 
         return self.compute_control_error(error, dt)
 
-    def compute_control_error(self, error, dt):
+    def compute_control_error(self, error, dt, vector_output=False):
         # Handle angle wrap, if desired
         if self.angle_wrap:
             if error > math.pi:
@@ -51,7 +51,10 @@ class PID:
             self.integrator = I # Help prevent integrator windup
         self.error_prev = error
 
-        return u_sat
+        if vector_output:
+            return [P, D, I]
+        else:
+            return u_sat
 
     def saturate(self, x, min_val, max_val):
         return max(min(x, max_val),min_val)

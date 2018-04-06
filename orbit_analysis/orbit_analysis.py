@@ -116,13 +116,14 @@ class OrbitAnalysis:
         self.lam = -1.0 # 1=CW, -1=CCW
         az_to_R_ratio = 0.0202
         kp_az = 3.0
-        kp_R = 0.02
+        kp_R = 0.3
         kd_az = 1.0
-        kd_R = 0.5
+        kd_R = 0.15
         ki_az = 0.0
         ki_R = 0.0
         self.az_PID = PID(kp_az, kd_az, ki_az)
         self.R_PID = PID(kp_R, kd_R, ki_R)
+        self.Raz_PID = PID(0, 0, 0)
         self.radius_max_error = 30.0
         self.phi_c_max = math.radians(45.0)
 
@@ -145,23 +146,33 @@ class OrbitAnalysis:
     def update_control(self):
         x, y, psi, az, R = self.state
 
+        az = angle_wrap(az)
         az_err = abs(az) - math.pi/2.0
         phi_az = self.az_PID.compute_control_error(az_err, self.dt)
 
         R_err = R - self.R_desired
-        # Adapt gains based on distance
-        R_gains = self.get_R_gains(R_err)
-        self.R_PID.set_gains(*R_gains)
+        # # Adapt gains based on distance
+        # R_gains = self.get_R_gains(R_err)
+        # self.R_PID.set_gains(*R_gains)
+
+
         # Compute control
-        phi_R = self.R_PID.compute_control_error(R_err, self.dt)
+        Raz_gains = self.R_PID.compute_control_error(R_err, self.dt, vector_output=True)
+        self.Raz_PID.set_gains(*Raz_gains)
+        phi_R = self.Raz_PID.compute_control_error(az, self.dt)
         print("R_err = {0}".format(R_err))
-        print("R_gains = {0}".format(R_gains))
+        print("Raz_gains = {0}".format(Raz_gains))
+        print("az = {0}".format(az))
         print("phi_R = {0}".format(phi_R))
+        print("phi_az = {0}".format(phi_az))
 
         phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
-        phi_c = self.lam*(phi_ff + phi_R + phi_az)
+        phi_c = self.lam*(phi_ff + phi_az) + phi_R
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
+        print("lam = {0}".format(self.lam))
+        print("phi_ff = {0}".format(phi_ff))
+        print("phi_c = {0}".format(self.phi_c))
 
     def get_R_gains(self, R_err):
         kp_R_switch = 10.0
