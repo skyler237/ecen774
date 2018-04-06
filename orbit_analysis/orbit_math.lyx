@@ -162,6 +162,14 @@ Math Macros:
 
 \begin_layout Standard
 \begin_inset FormulaMacro
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
 \newcommand{\partialdd}[2][]{\frac{\partial#1}{\partial#2}}
 \end_inset
 
@@ -334,8 +342,8 @@ R_{t}\\
 \az\\
 \el
 \end{array}\right)\\
-\dot{x_{t}^{b}} & = & \left(\vxtw-V_{a}\cos\psi\right)\cos\psi-\left(x_{t}^{w}-x^{w}\right)\sin(\psi)\dot{\psi}+\left[\left(\vytw-V_{a}\sin\psi\right)\sin\psi+\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\dot{\psi}\right]\\
- & = & \vxtw\cos\psi+\vytw\sin\psi-V_{a}-\dot{\psi}\left[\left(x_{t}^{w}-x^{w}\right)\sin(\psi)-\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\right]\\
+\dot{x_{t}^{b}} & = & \left(\vxtw-V_{a}\cos\psi\right)\cos\psi-\left(x_{t}^{w}-x^{w}\right)\sin(\psi)\dot{\psi}+\left(\vytw-V_{a}\sin\psi\right)\sin\psi+\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\dot{\psi}\\
+ & = & \vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}\left[-\left(x_{t}^{w}-x^{w}\right)\sin(\psi)+\left(y_{t}^{w}-y^{w}\right)\cos(\psi)\right]\\
  & = & \vxtw\cos\psi+\vytw\sin\psi-V_{a}+\dot{\psi}y_{t}^{b}\\
 \dot{y_{t}^{b}} & = & -\left(\vxtw-V_{a}\cos\psi\right)\sin\psi-\left(x_{t}^{w}-x^{w}\right)\cos(\psi)\dot{\psi}+\left[\left(\vytw-V_{a}\sin\psi\right)\cos\psi-\left(y_{t}^{w}-y^{w}\right)\sin(\psi)\dot{\psi}\right]\\
  & = & -\vxtw\sin\psi+\vytw\cos\psi-\dot{\psi}\left[\left(x_{t}^{w}-x^{w}\right)\cos(\psi)+\left(y_{t}^{w}-y^{w}\right)\sin(\psi)\right]\\
@@ -561,7 +569,7 @@ y-y_{t}^{w} & = & -\left(x_{t}^{b}\sin\psi+y_{t}^{b}\cos\psi\right)\\
  & = & \left(\begin{array}{c}
 -\vxtw\cos\psi-\vytw\sin\psi+V_{a}-\dot{\psi}\left(R_{d}+e_{1}-e_{3}\right)\\
 \frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin\psi-\vytw\cos\psi-\dot{\psi}e_{1}\\
-\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos\psi-\left(R_{d}+e_{1}-e_{3}\right)\right)v_{x_{t}}+\left(-e_{1}\sin\psi+\left(R_{d}+e_{1}-e_{3}\right)\cos\psi\right)v_{y_{t}}}{R_{d}-e_{3}}
+\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos\psi-\left(R_{d}+e_{1}-e_{3}\right)\sin\psi\right)v_{x_{t}}+\left(-e_{1}\sin\psi+\left(R_{d}+e_{1}-e_{3}\right)\cos\psi\right)v_{y_{t}}}{R_{d}-e_{3}}
 \end{array}\right)
 \end{eqnarray*}
 
@@ -582,8 +590,8 @@ Yaw-augmented error dynamics
 -\vxtw\cos\psi-\vytw\sin\psi+V_{a}-\dot{\psi}y_{t}^{b}\\
 \frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin\psi-\vytw\cos\psi+\dot{\psi}x_{t}^{b}\\
 \frac{-V_{a}x_{t}^{b}}{R_{t}}-\frac{\left(x-x_{t}^{w}\right)v_{x_{t}}+\left(y-y_{t}^{w}\right)v_{y_{t}}}{R_{t}}\\
-\psi\\
-\dot{\psi}
+\dot{\psi}\\
+\ddot{\psi}
 \end{array}\right)\\
  & = & \left(\begin{array}{c}
 \dot{e_{1}}\\
@@ -595,10 +603,56 @@ Yaw-augmented error dynamics
  & = & \left(\begin{array}{c}
 -\vxtw\cos e_{4}-\vytw\sin e_{4}+V_{a}-e_{5}\left(R_{d}+e_{1}-e_{3}\right)\\
 \frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin e_{4}-\vytw\cos e_{4}-e_{1}e_{5}\\
-\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos e_{4}-\left(R_{d}+e_{1}-e_{3}\right)\right)v_{x_{t}}+\left(-e_{1}\sin e_{4}+\left(R_{d}+e_{1}-e_{3}\right)\cos e_{4}\right)v_{y_{t}}}{R_{d}-e_{3}}\\
-e_{5}\\
-\frac{g}{V_{a}}\tan\phi
+\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos e_{4}-\left(R_{d}+e_{1}-e_{3}\right)\sin e_{4}\right)v_{x_{t}}+\left(-e_{1}\sin e_{4}+\left(R_{d}+e_{1}-e_{3}\right)\cos e_{4}\right)v_{y_{t}}}{R_{d}-e_{3}}\\
+\frac{g}{V_{a}}\tan\phi\\
+\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}
 \end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Virtual Wind Dynamics
+\end_layout
+
+\begin_layout Standard
+Another approach is to treat the target velocity as a wind vector, where
+ the ground speed of the aircraft is now the velocity relative to the target.
+ Still assuming no actual wind.
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vt}{\mathbf{V_{t}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vw}{\mathbf{V_{w}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\mathbf{V_{t}} & = & \left(\begin{array}{c}
+\vxtw\\
+\vytw
+\end{array}\right)\\
+\Vw & = & -\Vt\\
+V_{g} & = & \norm{V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)+\Vw}\\
 \end{eqnarray*}
 
 \end_inset
@@ -608,6 +662,136 @@ e_{5}\\
 
 \begin_layout Section
 Stability Analysis
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\e}{\mathbf{e}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\edot}{\dot{\e}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\u}{\mathbf{u}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\grad}[1]{\triangledown#1}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Vanilla Lyapunov
+\end_layout
+
+\begin_layout Standard
+\align center
+Let 
+\begin_inset Formula $\begin{array}{c}
+V(\e)\end{array}=\frac{1}{2}\left(e_{1}^{2}+e_{2}^{2}+e_{3}^{2}\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\triangledown V(\e) & = & \left[\begin{array}{ccccc}
+e_{1} & e_{2} & e_{3} & 0 & 0\end{array}\right]\\
+\dot{V}(\e) & = & \grad{V(\e)}\edot\\
+ & = & e_{1}\left(-\vxtw\cos e_{4}-\vytw\sin e_{4}+V_{a}-e_{5}\left(R_{d}+e_{1}-e_{3}\right)\right)+\\
+ &  & e_{2}\left(\frac{-V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\vxtw\sin e_{4}-\vytw\cos e_{4}-e_{1}e_{5}\right)+\\
+ &  & e_{3}\left(\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos e_{4}-\left(R_{d}+e_{1}-e_{3}\right)\sin e_{4}\right)v_{x_{t}}^{w}+\left(-e_{1}\sin e_{4}+\left(R_{d}+e_{1}-e_{3}\right)\cos e_{4}\right)v_{y_{t}}^{w}}{R_{d}-e_{3}}\right)\\
+ & = & -\left(e_{1}+\frac{e_{1}e_{3}}{R_{d}-e_{3}}\right)\vxtw\cos(e_{4})-\left(e_{1}+\frac{e_{1}e_{3}}{R_{d}-e_{3}}\right)\vytw\sin(e_{4})+\left(e_{1}+\frac{e_{1}e_{3}}{R_{d}-e_{3}}\right)V_{a}-e_{1}e_{5}R_{d}-e_{1}^{2}e_{5}+e_{1}e_{3}e_{5}\\
+ &  & -\frac{e_{2}V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}+\left(e_{2}-\frac{R_{d}+e_{1}-e_{3}}{R_{d}-e_{3}}\right)\vxtw\sin(e_{4})+\left(\frac{R_{d}+e_{1}-e_{3}}{R_{d}-e_{3}}-e_{2}\right)\vytw\cos(e_{4})-e_{1}e_{2}e_{5}\\
+ & = & \left(\frac{e_{1}R_{d}}{R_{d}-e_{3}}\right)\left(V_{a}-\vxtw\cos(e_{4})-\vytw\sin(e_{4})\right)+e_{1}e_{5}\left(-e_{1}-e_{2}+e_{3}-R_{d}\right)+\left(e_{2}-\frac{e_{1}}{R_{d}-e_{3}}-1\right)\left(\vxtw\sin(e_{4})-\vytw\cos(e_{4})\right)-\frac{e_{2}V_{a}^{2}\dot{\phi}}{g\sin^{2}(\phi)}\\
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+That looks pretty messy....
+\end_layout
+
+\begin_layout Subsection
+Linearized State Space
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\edot & = & f(\e)+g(\e)\u\\
+\u & = & \left(\begin{array}{c}
+0\\
+0\\
+0\\
+0\\
+\frac{g}{V_{a}}\tan\phi
+\end{array}\right)\\
+\dot{\u} & = & 0\text{ (assume this for now)}\\
+f(\e) & = & \left(\begin{array}{c}
+-\vxtw\cos e_{4}-\vytw\sin e_{4}+V_{a}-e_{5}\left(R_{d}+e_{1}-e_{3}\right)\\
+\vxtw\sin e_{4}-\vytw\cos e_{4}-e_{1}e_{5}\\
+\frac{V_{a}e_{1}}{R_{d}-e_{3}}+\frac{\left(-e_{1}\cos e_{4}-\left(R_{d}+e_{1}-e_{3}\right)\sin e_{4}\right)v_{x_{t}}+\left(-e_{1}\sin e_{4}+\left(R_{d}+e_{1}-e_{3}\right)\cos e_{4}\right)v_{y_{t}}}{R_{d}-e_{3}}\\
+e_{5}\\
+0
+\end{array}\right)\\
+g(\e) & = & 1
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Linearizing f and g gives
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula 
+\begin{eqnarray*}
+\edot & = & A\e+B\u\\
+A & = & \partialdd[f]{\e}\biggr\rvert\\
+ & = & \left(\begin{array}{ccccc}
+-e_{5} & 0 & e_{5} & \vxtw\sin(e_{4})-\vytw\cos(e_{4}) & -R_{d}\\
+-e_{5} & 0 & 0 & \vxtw\cos(e_{4})+\vytw\sin(e_{4}) & 0\\
+\frac{V_{a}-\left(\cos(e_{4})+\sin(e_{4})\right)\vxtw-\left(\sin(e_{4})-\cos(e_{4})\right)\vytw}{R_{d}} & 0 & \frac{\left(-\sin(e_{4})\vxtw-\cos(e_{4})\vytw\right)}{R_{d}} & -\left(\cos(e_{4})\vxtw+\sin(e_{4})\vytw\right) & 0\\
+0 & 0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0 & 0
+\end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Also pretty messy...
 \end_layout
 
 \begin_layout Section
@@ -682,6 +866,24 @@ In order to obtain a stable gain that is most effective in the nearfield,
 \end_inset
 
  where a,b,c,d, and f are constants.
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Alternatively, we could use a blending function (such as the one used in
+ UAV Book p.
+ 49):
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\sigma(\alpha)=\frac{1+e^{-M(\alpha-\alpha_{0})}+e^{M(\alpha+\alpha_{0})}}{\left(1+e^{-M(\alpha-\alpha_{0})}\right)\left(1+e^{M(\alpha+\alpha_{0})}\right)}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
