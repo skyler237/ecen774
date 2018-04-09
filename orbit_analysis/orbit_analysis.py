@@ -55,7 +55,8 @@ class OrbitPlotter:
     def _define_plots(self):
         plots = ['y_r x_r y_t_r x_t_r -2d', 'y x y_t x_t -2d',
                  '_R R_error',      '_az az_error',
-                 'phi_c',      '_psi',
+                 'phi_c',      'psi',
+                 'vx vx_e -l', 'vy vy_e'
                  ]
         return plots
 
@@ -64,8 +65,10 @@ class OrbitPlotter:
         self.plotter.define_input_vector("actual_pos", ['x', 'y'])
         self.plotter.define_input_vector("target_pos", ['x_t', 'y_t'])
         self.plotter.define_input_vector("target_rel_pos", ['x_t_r', 'y_t_r'])
+        self.plotter.define_input_vector("target_vel", ['vx', 'vy'])
+        self.plotter.define_input_vector("target_vel_est", ['vx_e', 'vy_e'])
 
-    def update(self, state, R_c, az_c, phi_c, target_pos, t):
+    def update(self, state, R_c, az_c, phi_c, target_pos, target_vel, target_vel_est, t):
         x_r, y_r, psi, az, R = state
 
         self.plotter.add_vector_measurement("state", state, t)
@@ -84,6 +87,8 @@ class OrbitPlotter:
             self.az_thresh_reached = True
         self.plotter.add_measurement("R_error", R_err, t)
         self.plotter.add_measurement("az_error", az_err, t, rad2deg=True)
+        self.plotter.add_vector_measurement("target_vel", target_vel, t)
+        self.plotter.add_vector_measurement("target_vel_est", target_vel_est, t)
         self.plotter.update_plots()
 
 class OrbitAnalysis:
@@ -101,31 +106,38 @@ class OrbitAnalysis:
 
         # Initial conditions
         t0 = 0
-        x0 = -200
-        y0 = -0
-        psi0 = 0
+        x0 = -300
+        y0 = 0
+        psi0 = math.radians(90)
         az0 = angle_wrap(np.pi + math.atan2(y0,x0) - psi0)
         R0 = math.sqrt(x0**2 + y0**2)
         self.state = [x0, y0, psi0, az0, R0]
         self.target_pos = np.array([0., 0.])
-        self.target_vel = np.array([3.0, 0.])
+        self.target_vel = np.array([3.0, 2.0])
         self.t = t0
 
         # Orbit control params
         self.R_desired = 100.0
-        self.lam = -1.0 # 1=CW, -1=CCW
+        self.lam = 1.0 # 1=CW, -1=CCW
         az_to_R_ratio = 0.0202
         kp_az = 3.0
-        kp_R = 0.3
+        kp_R = 8.0
+        # kp_R = 20.0
         kd_az = 1.0
-        kd_R = 0.15
+        kd_R = 4.0
+        # kd_R = 15.0
         ki_az = 0.0
         ki_R = 0.0
         self.az_PID = PID(kp_az, kd_az, ki_az)
         self.R_PID = PID(kp_R, kd_R, ki_R)
         self.Raz_PID = PID(0, 0, 0)
+        self.Raz_err_thresh = 0.00
         self.radius_max_error = 30.0
         self.phi_c_max = math.radians(45.0)
+
+        # Velocity estimation params
+        self.target_vel_est = np.array([0., 0.])
+        self.k_vel_est = 1.0e-3
 
     def propagate(self):
         # Create time vector
@@ -139,40 +151,59 @@ class OrbitAnalysis:
         self.t += self.dt
         # Update plots
         for s, t in zip(states, time):
-            self.plotter.update(s, self.R_desired, self.lam*math.radians(90.0), self.phi_c, self.target_pos, t)
+            self.plotter.update(s, self.R_desired, self.lam*math.radians(90.0),
+                                self.phi_c, self.target_pos, self.target_vel, self.target_vel_est, t)
         # Update state variable
         self.state = states[-1]
 
     def update_control(self):
         x, y, psi, az, R = self.state
 
+        Vg_sq = ((self.Va*math.cos(psi)-self.target_vel_est[0])**2 + (self.Va*math.sin(psi)-self.target_vel_est[1])**2)
+        phi_ff = math.atan(Vg_sq/(self.R_desired*self.g))
+        Vg = math.sqrt(Vg_sq)
+        sign = -self.lam*np.sign(self.target_vel_est[1]*math.cos(psi) - self.target_vel_est[0]*math.sin(psi))
+        az_err_pred = sign*math.acos((self.Va - self.target_vel_est[0]*math.cos(psi) - self.target_vel_est[1]*math.sin(psi))/Vg)
+
         az = angle_wrap(az)
-        az_err = abs(az) - math.pi/2.0
+        az_err = abs(az) - math.pi/2.0 - az_err_pred
         phi_az = self.az_PID.compute_control_error(az_err, self.dt)
 
-        R_err = R - self.R_desired
+        # print("sign = {0}".format(sign))
+        # print("az_err_pred = {0}".format(az_err_pred))
+        # print("az_err = {0}".format(az_err))
+        # print("diff = {0}".format(az_err_pred - az_err))
+        # print("phi_az = {0}".format(phi_az))
+        # print("phi_ff = {0}".format(phi_ff))
+
+        R_ratio = R/self.R_desired
+        if R_ratio < 1:
+            p = 8.0
+            R_err = 1.0/p*R_ratio**p - 1.0/p
+            # R_err = math.exp(R_ratio - 1) - 1
+        else:
+            R_err = math.log(R/self.R_desired)
+        # R_err = math.atan(R - self.R_desired)
         # # Adapt gains based on distance
         # R_gains = self.get_R_gains(R_err)
         # self.R_PID.set_gains(*R_gains)
+
+        print("R_err = {0}".format(R_err))
 
 
         # Compute control
         Raz_gains = self.R_PID.compute_control_error(R_err, self.dt, vector_output=True)
         self.Raz_PID.set_gains(*Raz_gains)
-        phi_R = self.Raz_PID.compute_control_error(az, self.dt)
-        print("R_err = {0}".format(R_err))
-        print("Raz_gains = {0}".format(Raz_gains))
-        print("az = {0}".format(az))
-        print("phi_R = {0}".format(phi_R))
-        print("phi_az = {0}".format(phi_az))
+        Raz_err = az-az_err_pred
+        if abs(Raz_err) < self.Raz_err_thresh:
+            Raz_err = 0
+        phi_R = self.Raz_PID.compute_control_error(Raz_err, self.dt)
 
-        phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
+        # phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
         phi_c = self.lam*(phi_ff + phi_az) + phi_R
+        
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
-        print("lam = {0}".format(self.lam))
-        print("phi_ff = {0}".format(phi_ff))
-        print("phi_c = {0}".format(self.phi_c))
 
     def get_R_gains(self, R_err):
         kp_R_switch = 10.0
@@ -206,6 +237,8 @@ class OrbitAnalysis:
     def _ode(self, state, t):
         x, y, psi, az, R = state
         vx_t, vy_t = self.target_vel
+        if R == 0:
+            R = 1e-10
 
         xdot = self.Va*math.cos(psi) - vx_t
         ydot = self.Va*math.sin(psi) - vy_t
