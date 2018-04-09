@@ -641,6 +641,14 @@ Another approach is to treat the target velocity as a wind vector, where
 \end_layout
 
 \begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vg}{\mathbf{V_{g}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \align center
 \begin_inset Formula 
 \begin{eqnarray*}
@@ -653,6 +661,47 @@ V_{g} & = & \norm{V_{a}\left(\begin{array}{c}
 \cos\psi\\
 \sin\psi
 \end{array}\right)+\Vw}\\
+\dot{\chi} & = & \frac{V_{g}}{R}\\
+ & = & \frac{g}{V_{g}}\tan\phi\\
+\phi_{ff} & = & \atan\left(\frac{V_{g}^{2}}{gR}\right)\\
+ & = & \atan\left(\frac{\norm{V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)+\Vw}^{2}}{gR_{d}}\right)\\
+ & = & \atan\left(\frac{\left(V_{a}\cos\psi-\vxtw\right)^{2}+\left(V_{a}\sin\psi-\vytw\right)^{2}}{gR_{d}}\right)\\
+\Vg & = & \mathbf{V_{a}}+\Vw\\
+V_{g}\left(\begin{array}{c}
+\cos\chi\\
+\sin\chi
+\end{array}\right) & = & V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)+\left(\begin{array}{c}
+v_{x_{w}}\\
+v_{y_{w}}
+\end{array}\right)\\
+V_{g}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+\cos\chi\\
+\sin\chi
+\end{array}\right) & = & V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)+\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+v_{x_{w}}\\
+v_{y_{w}}
+\end{array}\right)\\
+V_{g}\cos\left(\chi-\psi\right) & = & V_{a}+v_{x_{w}}\cos\psi+v_{y_{w}}\sin\psi\\
+\chi-\psi & = & \cos^{-1}\left(\frac{V_{a}+v_{x_{w}}\cos\psi+v_{y_{w}}\sin\psi}{V_{g}}\right)\\
+\psi & = & \chi+\cos^{-1}\left(\frac{V_{g}-v_{x_{w}}\cos\chi-v_{y_{w}}\sin\chi}{V_{a}}\right)
 \end{eqnarray*}
 
 \end_inset
