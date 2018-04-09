@@ -13,6 +13,7 @@ import numpy as np
 import cv2
 from scipy.integrate import odeint
 from PID import PID
+from KalmanFilter import KalmanFilter
 
 ## *GPS-denied Orbit Control Analysis*
 ## State equations:
@@ -68,7 +69,7 @@ class OrbitPlotter:
         self.plotter.define_input_vector("target_vel", ['vx', 'vy'])
         self.plotter.define_input_vector("target_vel_est", ['vx_e', 'vy_e'])
 
-    def update(self, state, R_c, az_c, phi_c, target_pos, target_vel, target_vel_est, t):
+    def update(self, state, R_c, az_err, phi_c, target_pos, target_vel, target_vel_est, t):
         x_r, y_r, psi, az, R = state
 
         self.plotter.add_vector_measurement("state", state, t)
@@ -81,7 +82,7 @@ class OrbitPlotter:
         if not self.R_thresh_reached and abs(R_err) < self.R_err_thresh:
             print("R error threshold ({0}) reached at t={1}".format(self.R_err_thresh, t))
             self.R_thresh_reached = True
-        az_err = az - az_c
+
         if not self.az_thresh_reached and abs(az_err) < self.az_err_thresh:
             print("az error threshold ({0}) reached at t={1}".format(self.az_err_thresh, t))
             self.az_thresh_reached = True
@@ -114,6 +115,7 @@ class OrbitAnalysis:
         self.state = [x0, y0, psi0, az0, R0]
         self.target_pos = np.array([0., 0.])
         self.target_vel = np.array([3.0, 2.0])
+        self.az_err = 0
         self.t = t0
 
         # Orbit control params
@@ -136,8 +138,9 @@ class OrbitAnalysis:
         self.phi_c_max = math.radians(45.0)
 
         # Velocity estimation params
-        self.target_vel_est = np.array([0., 0.])
-        self.k_vel_est = 1.0e-3
+        self.target_vel_est = self.target_vel
+        self.vel_est_alpha = 0.9
+        self.vel_filter = VelocityFilter(self.dt)
 
     def propagate(self):
         # Create time vector
@@ -151,7 +154,7 @@ class OrbitAnalysis:
         self.t += self.dt
         # Update plots
         for s, t in zip(states, time):
-            self.plotter.update(s, self.R_desired, self.lam*math.radians(90.0),
+            self.plotter.update(s, self.R_desired, self.az_err,
                                 self.phi_c, self.target_pos, self.target_vel, self.target_vel_est, t)
         # Update state variable
         self.state = states[-1]
@@ -167,6 +170,7 @@ class OrbitAnalysis:
 
         az = angle_wrap(az)
         az_err = abs(az) - math.pi/2.0 - az_err_pred
+        self.az_err = az_err # hold on to this for plotting
         phi_az = self.az_PID.compute_control_error(az_err, self.dt)
 
         # print("sign = {0}".format(sign))
@@ -188,8 +192,6 @@ class OrbitAnalysis:
         # R_gains = self.get_R_gains(R_err)
         # self.R_PID.set_gains(*R_gains)
 
-        print("R_err = {0}".format(R_err))
-
 
         # Compute control
         Raz_gains = self.R_PID.compute_control_error(R_err, self.dt, vector_output=True)
@@ -202,8 +204,28 @@ class OrbitAnalysis:
         # phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
         phi_c = self.lam*(phi_ff + phi_az) + phi_R
-        
+
+        if abs(R - self.R_desired) < 10:
+            self.estimate_target_velocity(phi_c, az_err, psi)
+
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
+
+    def estimate_target_velocity(self, phi, az_err, psi):
+        Vg_hat = math.sqrt(abs(self.g*self.R_desired*math.tan(phi)))
+        chi_hat = psi + az_err
+
+        Vt_meas = np.array([self.Va*math.cos(psi) - Vg_hat*math.cos(chi_hat), self.Va*math.sin(psi) - Vg_hat*math.sin(chi_hat)])
+
+        print("Vt meas = {0}".format(Vt_meas))
+        if np.linalg.norm(Vt_meas) < self.Va:
+            self.target_vel_est = self.vel_filter.run(np.hstack((Vt_meas)))
+
+        # self.target_vel_est = (1.0 - self.vel_est_alpha)*Vt_meas + self.vel_est_alpha*self.target_vel_est
+        print("Target vel estimate = {0}".format(self.target_vel_est))
+
+        # FIXME: Use truth for testing
+        self.target_vel_est = self.target_vel
+
 
     def get_R_gains(self, R_err):
         kp_R_switch = 10.0
@@ -247,6 +269,30 @@ class OrbitAnalysis:
         Rdot = self.Va/R * (x*math.cos(psi) + y*math.sin(psi)) - (x*vx_t + y*vy_t)/R
 
         return [xdot, ydot, psidot, azdot, Rdot]
+
+class VelocityFilter:
+    def __init__(self, dt):
+        self.filter = KalmanFilter()
+
+        self.filter.F = np.kron(np.array([[1., dt],
+                                         [0., 1.]]), np.eye(2))
+        self.filter.H = np.kron(np.array([1., 0.]), np.eye(2))
+
+        self.filter.P = np.kron(np.diag([2.0]*2), np.eye(2))
+        self.filter.Q = np.kron(np.diag([0.1]*2), np.eye(2))
+        self.filter.R = np.diag([1.0]*2)
+
+        self.filter.xhat = np.array([0., 0., 0., 0.])
+
+    def predict(self):
+        return self.filter.predict()
+
+    def update(self, meas):
+        return self.filter.update(meas)
+
+    def run(self, meas):
+        self.update(meas)
+        return self.predict()
 
 def angle_wrap(x):
     xwrap = np.array(np.mod(x, 2*np.pi))
