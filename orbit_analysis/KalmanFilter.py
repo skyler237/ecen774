@@ -45,14 +45,14 @@ class KalmanFilter:
         self.xhat = np.reshape(self.xhat, (-1,1))
 
         # Get residual
-        set_trace()
+        # set_trace()
         r = y - self.H.dot(self.xhat)
         # Get innovation covariance
         S = self.R + self.H.dot(self.P.dot(self.H.T))
         # Get kalman gain
         K = self.P.dot(self.H.T.dot(np.linalg.inv(S)))
         # Update state
-        self.xhat = self.xhat + K.dot(y)
+        self.xhat = self.xhat + K.dot(r)
         # Update covariance
         I = np.eye(np.shape(self.P)[0])
         self.P = (I - K.dot(self.H)).dot(self.P).dot((I - K.dot(self.H)).T) + K.dot(self.R).dot(K.T)

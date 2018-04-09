@@ -205,26 +205,27 @@ class OrbitAnalysis:
 
         phi_c = self.lam*(phi_ff + phi_az) + phi_R
 
-        if abs(R - self.R_desired) < 10:
-            self.estimate_target_velocity(phi_c, az_err, psi)
+        if abs(R - self.R_desired) < 5:
+            self.estimate_target_velocity(phi_c, az_err_pred, psi)
 
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
 
     def estimate_target_velocity(self, phi, az_err, psi):
         Vg_hat = math.sqrt(abs(self.g*self.R_desired*math.tan(phi)))
-        chi_hat = psi + az_err
+        chi_hat = angle_wrap(psi + az_err)
+        print("chi_hat = {0}".format(chi_hat))
 
         Vt_meas = np.array([self.Va*math.cos(psi) - Vg_hat*math.cos(chi_hat), self.Va*math.sin(psi) - Vg_hat*math.sin(chi_hat)])
 
         print("Vt meas = {0}".format(Vt_meas))
         if np.linalg.norm(Vt_meas) < self.Va:
-            self.target_vel_est = self.vel_filter.run(np.hstack((Vt_meas)))
+            self.target_vel_est = self.vel_filter.run(np.hstack((Vt_meas)))[0:2]
 
         # self.target_vel_est = (1.0 - self.vel_est_alpha)*Vt_meas + self.vel_est_alpha*self.target_vel_est
         print("Target vel estimate = {0}".format(self.target_vel_est))
 
         # FIXME: Use truth for testing
-        self.target_vel_est = self.target_vel
+        # self.target_vel_est = self.target_vel
 
 
     def get_R_gains(self, R_err):
@@ -278,11 +279,11 @@ class VelocityFilter:
                                          [0., 1.]]), np.eye(2))
         self.filter.H = np.kron(np.array([1., 0.]), np.eye(2))
 
-        self.filter.P = np.kron(np.diag([2.0]*2), np.eye(2))
-        self.filter.Q = np.kron(np.diag([0.1]*2), np.eye(2))
-        self.filter.R = np.diag([1.0]*2)
+        self.filter.P = np.diag([1., 1., 1e-9, 1e-9])
+        self.filter.Q = np.kron(np.diag([1e-9]*2), np.eye(2))
+        self.filter.R = np.diag([1000.0]*2)
 
-        self.filter.xhat = np.array([0., 0., 0., 0.])
+        self.filter.xhat = np.array([3., 2., 0., 0.])
 
     def predict(self):
         return self.filter.predict()
