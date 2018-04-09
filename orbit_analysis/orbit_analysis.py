@@ -7,6 +7,7 @@ for p in sys.path:
 for p in rm_python2:
     sys.path.remove(p)
 
+from IPython.core.debugger import set_trace
 from Plotter import Plotter
 import math
 import numpy as np
@@ -114,7 +115,7 @@ class OrbitAnalysis:
         R0 = math.sqrt(x0**2 + y0**2)
         self.state = [x0, y0, psi0, az0, R0]
         self.target_pos = np.array([0., 0.])
-        self.target_vel = np.array([3.0, 2.0])
+        self.target_vel = np.array([3.0, 0.0])
         self.az_err = 0
         self.t = t0
 
@@ -138,7 +139,8 @@ class OrbitAnalysis:
         self.phi_c_max = math.radians(45.0)
 
         # Velocity estimation params
-        self.target_vel_est = self.target_vel
+        self.target_vel_est = np.array([1e-3]*2)
+        self.R_avg = 0
         self.vel_est_alpha = 0.9
         self.vel_filter = VelocityFilter(self.dt)
 
@@ -166,7 +168,7 @@ class OrbitAnalysis:
         phi_ff = math.atan(Vg_sq/(self.R_desired*self.g))
         Vg = math.sqrt(Vg_sq)
         sign = -self.lam*np.sign(self.target_vel_est[1]*math.cos(psi) - self.target_vel_est[0]*math.sin(psi))
-        az_err_pred = sign*math.acos((self.Va - self.target_vel_est[0]*math.cos(psi) - self.target_vel_est[1]*math.sin(psi))/Vg)
+        az_err_pred = float(sign)*math.acos((self.Va - self.target_vel_est[0]*math.cos(psi) - self.target_vel_est[1]*math.sin(psi))/Vg)
 
         az = angle_wrap(az)
         az_err = abs(az) - math.pi/2.0 - az_err_pred
@@ -200,32 +202,41 @@ class OrbitAnalysis:
         if abs(Raz_err) < self.Raz_err_thresh:
             Raz_err = 0
         phi_R = self.Raz_PID.compute_control_error(Raz_err, self.dt)
+        # print("phi_R = {0}".format(phi_R))
 
         # phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
         phi_c = self.lam*(phi_ff + phi_az) + phi_R
 
-        if abs(R - self.R_desired) < 5:
-            self.estimate_target_velocity(phi_c, az_err_pred, psi)
 
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
 
+        self.R_avg = 0.99*(R - self.R_desired) + 0.01*self.R_avg
+        if abs(self.R_avg) < 10:
+            self.estimate_target_velocity(phi_c, az_err_pred, psi)
+
     def estimate_target_velocity(self, phi, az_err, psi):
         Vg_hat = math.sqrt(abs(self.g*self.R_desired*math.tan(phi)))
+        # FIXME: for testing vs. truth
+        Vg = math.sqrt((self.Va*math.cos(psi)-self.target_vel[0])**2 + (self.Va*math.sin(psi)-self.target_vel[1])**2)
+        # print("Vg err = {0}".format(Vg_hat - Vg))
         chi_hat = angle_wrap(psi + az_err)
-        print("chi_hat = {0}".format(chi_hat))
+        # FIXME: for testing
+        sign = -self.lam*np.sign(self.target_vel[1]*math.cos(psi) - self.target_vel[0]*math.sin(psi))
+        chi = psi + sign*math.acos((self.Va - self.target_vel[0]*math.cos(psi) - self.target_vel[1]*math.sin(psi))/Vg)
+        # print("chi err = {0}".format(chi_hat - chi))
 
         Vt_meas = np.array([self.Va*math.cos(psi) - Vg_hat*math.cos(chi_hat), self.Va*math.sin(psi) - Vg_hat*math.sin(chi_hat)])
 
-        print("Vt meas = {0}".format(Vt_meas))
+        # print("Vt meas = {0}".format(Vt_meas))
         if np.linalg.norm(Vt_meas) < self.Va:
             self.target_vel_est = self.vel_filter.run(np.hstack((Vt_meas)))[0:2]
 
         # self.target_vel_est = (1.0 - self.vel_est_alpha)*Vt_meas + self.vel_est_alpha*self.target_vel_est
-        print("Target vel estimate = {0}".format(self.target_vel_est))
+        # print("Target vel estimate = {0}".format(self.target_vel_est))
 
         # FIXME: Use truth for testing
-        # self.target_vel_est = self.target_vel
+        # self.target_vel_est = np.array([0.001, 0.])
 
 
     def get_R_gains(self, R_err):
@@ -281,9 +292,9 @@ class VelocityFilter:
 
         self.filter.P = np.diag([1., 1., 1e-9, 1e-9])
         self.filter.Q = np.kron(np.diag([1e-9]*2), np.eye(2))
-        self.filter.R = np.diag([1000.0]*2)
+        self.filter.R = np.diag([15.0]*2)
 
-        self.filter.xhat = np.array([3., 2., 0., 0.])
+        self.filter.xhat = np.array([0., 0., 0., 0.])
 
     def predict(self):
         return self.filter.predict()
@@ -299,7 +310,10 @@ def angle_wrap(x):
     xwrap = np.array(np.mod(x, 2*np.pi))
     mask = np.abs(xwrap) > np.pi
     xwrap[mask] -= 2*np.pi * np.sign(xwrap[mask])
-    return xwrap
+    if np.size(xwrap) == 1:
+        return float(xwrap)
+    else:
+        return xwrap
 
 def sat(x, minimum, maximum):
     return min(max(x, minimum), maximum)
@@ -322,6 +336,9 @@ if __name__ == "__main__":
                 print("Paused")
             else:
                 print("Resumed")
+        elif key == ord('z'):
+            vel = np.copy(analysis.target_vel)
+            analysis.target_vel = np.array([vel[1], -vel[0]])
         elif key == 27:
             print("Quit")
             sys.exit()
