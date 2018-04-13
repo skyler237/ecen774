@@ -115,7 +115,7 @@ class OrbitAnalysis:
         R0 = math.sqrt(x0**2 + y0**2)
         self.state = [x0, y0, psi0, az0, R0]
         self.target_pos = np.array([0., 0.])
-        self.target_vel = np.array([3.0, 0.0])
+        self.target_vel = np.array([3.0, 1.0])
         self.az_err = 0
         self.t = t0
 
@@ -137,6 +137,10 @@ class OrbitAnalysis:
         self.Raz_err_thresh = 0.00
         self.radius_max_error = 30.0
         self.phi_c_max = math.radians(45.0)
+        kp_gamma = 10.0
+        kd_gamma = 1.0
+        ki_gamma = 0.0
+        self.gamma_PID = PID(kp_gamma, kd_gamma, ki_gamma)
 
         # Velocity estimation params
         self.target_vel_est = np.array([1e-3]*2)
@@ -167,18 +171,21 @@ class OrbitAnalysis:
         Vg_sq = ((self.Va*math.cos(psi)-self.target_vel_est[0])**2 + (self.Va*math.sin(psi)-self.target_vel_est[1])**2)
         phi_ff = math.atan(Vg_sq/(self.R_desired*self.g))
         Vg = math.sqrt(Vg_sq)
-        sign = -self.lam*np.sign(self.target_vel_est[1]*math.cos(psi) - self.target_vel_est[0]*math.sin(psi))
-        az_err_pred = float(sign)*math.acos((self.Va - self.target_vel_est[0]*math.cos(psi) - self.target_vel_est[1]*math.sin(psi))/Vg)
+        # Compute difference between chi and psi (chi - psi)
+        sign = self.lam*np.sign(self.target_vel_est[1]*math.cos(psi) - self.target_vel_est[0]*math.sin(psi))
+        az_diff = float(sign)*math.acos((self.Va - self.target_vel_est[0]*math.cos(psi) - self.target_vel_est[1]*math.sin(psi))/Vg)
 
         az = angle_wrap(az)
-        az_err = abs(az) - math.pi/2.0 - az_err_pred
+        gamma = az + az_diff
+        # az_err = abs(az) - math.pi/2.0 - az_diff
+        az_err = gamma - self.lam*math.pi/2.0
         self.az_err = az_err # hold on to this for plotting
         phi_az = self.az_PID.compute_control_error(az_err, self.dt)
 
         # print("sign = {0}".format(sign))
-        # print("az_err_pred = {0}".format(az_err_pred))
+        # print("az_diff = {0}".format(az_diff))
         # print("az_err = {0}".format(az_err))
-        # print("diff = {0}".format(az_err_pred - az_err))
+        # print("diff = {0}".format(az_diff - az_err))
         # print("phi_az = {0}".format(phi_az))
         # print("phi_ff = {0}".format(phi_ff))
 
@@ -194,11 +201,11 @@ class OrbitAnalysis:
         # R_gains = self.get_R_gains(R_err)
         # self.R_PID.set_gains(*R_gains)
 
-
+        # FIXME: Uncomment this ??
         # Compute control
         Raz_gains = self.R_PID.compute_control_error(R_err, self.dt, vector_output=True)
         self.Raz_PID.set_gains(*Raz_gains)
-        Raz_err = az-az_err_pred
+        Raz_err = gamma
         if abs(Raz_err) < self.Raz_err_thresh:
             Raz_err = 0
         phi_R = self.Raz_PID.compute_control_error(Raz_err, self.dt)
@@ -207,20 +214,28 @@ class OrbitAnalysis:
         # phi_ff = math.atan(self.Va**2/(self.g*self.R_desired))
 
         phi_c = self.lam*(phi_ff + phi_az) + phi_R
+        # REVIEW: Testing combined control appproach
+        Vg_max = self.Va + np.linalg.norm(self.target_vel)
+        gamma_rate = self.g/Vg_max*math.tan(self.phi_c_max)*0.2
+        gamma_d = self.lam*(math.atan(-gamma_rate*(R-self.R_desired))+math.pi/2.0)
+        gamma_err = angle_wrap(gamma-gamma_d)
+
+        phi_gamma = self.gamma_PID.compute_control_error(gamma_err, self.dt)
+        phi_c = self.lam*phi_ff + phi_gamma
 
 
         self.phi_c = sat(phi_c, -self.phi_c_max, self.phi_c_max)
 
         self.R_avg = 0.99*(R - self.R_desired) + 0.01*self.R_avg
         if abs(self.R_avg) < 10:
-            self.estimate_target_velocity(phi_c, az_err_pred, psi)
+            self.estimate_target_velocity(phi_c, az_diff, psi)
 
-    def estimate_target_velocity(self, phi, az_err, psi):
+    def estimate_target_velocity(self, phi, az_diff, psi):
         Vg_hat = math.sqrt(abs(self.g*self.R_desired*math.tan(phi)))
         # FIXME: for testing vs. truth
         Vg = math.sqrt((self.Va*math.cos(psi)-self.target_vel[0])**2 + (self.Va*math.sin(psi)-self.target_vel[1])**2)
         # print("Vg err = {0}".format(Vg_hat - Vg))
-        chi_hat = angle_wrap(psi + az_err)
+        chi_hat = angle_wrap(psi - az_diff)
         # FIXME: for testing
         sign = -self.lam*np.sign(self.target_vel[1]*math.cos(psi) - self.target_vel[0]*math.sin(psi))
         chi = psi + sign*math.acos((self.Va - self.target_vel[0]*math.cos(psi) - self.target_vel[1]*math.sin(psi))/Vg)
@@ -237,6 +252,7 @@ class OrbitAnalysis:
 
         # FIXME: Use truth for testing
         # self.target_vel_est = np.array([0.001, 0.])
+        # self.target_vel_est = self.target_vel
 
 
     def get_R_gains(self, R_err):
@@ -292,7 +308,7 @@ class VelocityFilter:
 
         self.filter.P = np.diag([1., 1., 1e-9, 1e-9])
         self.filter.Q = np.kron(np.diag([1e-9]*2), np.eye(2))
-        self.filter.R = np.diag([15.0]*2)
+        self.filter.R = np.diag([5.0]*2)
 
         self.filter.xhat = np.array([0., 0., 0., 0.])
 

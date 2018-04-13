@@ -1,0 +1,665 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Math Macros:
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\atan}{\tan^{-1}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\partialdd}[2][]{\frac{\partial#1}{\partial#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\dd}[2][]{\frac{d#1}{d#2}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\sat}[3]{\text{sat}\left(#1,#2,#3\right)}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\grad}[1]{\triangledown#1}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100col%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Variable Macros:
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vt}{\mathbf{V_{t}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vw}{\mathbf{V_{w}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Vg}{\mathbf{V_{g}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\Va}{\mathbf{V_{a}}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\el}{\alpha_{el}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\eldot}{\dot{\el}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\az}{\alpha_{az}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\azdot}{\dot{\az}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\x}{\mathbf{x}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\xdot}{\dot{\x}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vxtb}{v_{x_{t}}^{b}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vxtw}{v_{x_{t}}^{w}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vytw}{v_{y_{t}}^{w}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\vytb}{v_{y_{t}}^{b}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\e}{\mathbf{e}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\edot}{\dot{\e}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\u}{\mathbf{u}}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset line
+LatexCommand rule
+offset "0.5ex"
+width "100col%"
+height "1pt"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+GPS-Denied Loitering about a Moving Target
+\end_layout
+
+\begin_layout Section
+Project definition
+\end_layout
+
+\begin_layout Standard
+The goal of this project is to control a fixed-wing UAV to follow a constant
+ radius orbit about a moving ground target without using GPS information.
+ For the scope of this project, we assume that using on-board sensors, we
+ can obtain accurate measurements of altitude, attitude, heading, and LOS
+ vector azimuth and elevation angles in the UAV vehicle 1 frame (unpitched,
+ unrolled).
+ Using these measurements, we assume that we can control the UAV using a
+ desired roll angle command.
+\end_layout
+
+\begin_layout Section
+System Dynamics
+\end_layout
+
+\begin_layout Standard
+In order to simplify our motion model, we treat the motion of the target
+ like a wind vector, equal and opposite the motion of the target.
+ Also, for simplicity, we derive the dynamics of the system using a constant-vel
+ocity model for the ground target.
+\end_layout
+
+\begin_layout Standard
+\align left
+Let the state be represented by
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\x=\left(\begin{array}{c}
+x\\
+y\\
+\psi\\
+\chi
+\end{array}\right)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ are the position of the UAV relative to the target, 
+\begin_inset Formula $\psi$
+\end_inset
+
+ represents the angle between true North and the body x-axis of the UAV,
+ and 
+\begin_inset Formula $\chi$
+\end_inset
+
+ represents the angle between true North and the velocity vector of the
+ UAV relative to the target.
+\end_layout
+
+\begin_layout Standard
+These states evolve according to
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\xdot=\left(\begin{array}{c}
+V_{g}\cos\chi\\
+V_{g}\sin\chi\\
+\frac{g}{V_{a}}\tan\phi\\
+\frac{g}{V_{g}}\tan\phi
+\end{array}\right)$
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $V_{g}$
+\end_inset
+
+ is the 
+\begin_inset Quotes eld
+\end_inset
+
+ground velocity
+\begin_inset Quotes erd
+\end_inset
+
+ of the UAV, or the velocity relative to the target, and 
+\begin_inset Formula $V_{a}$
+\end_inset
+
+ is the airpseed of the aircraft.
+\end_layout
+
+\begin_layout Standard
+The relationship between 
+\begin_inset Formula $V_{g}$
+\end_inset
+
+ and 
+\begin_inset Formula $V_{a}$
+\end_inset
+
+ is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\Vg & = & \Va+\Vw
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assuming 
+\begin_inset Formula $\Vw$
+\end_inset
+
+ is actually just the negative of the target velocity, 
+\begin_inset Formula $\Vt$
+\end_inset
+
+, the above equation becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $V_{g}\left(\begin{array}{c}
+\cos\chi\\
+\sin\chi
+\end{array}\right)=V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)-\left(\begin{array}{c}
+v_{x_{t}}\\
+v_{y_{t}}
+\end{array}\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Using this equation, we get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+V_{g}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+\cos\chi\\
+\sin\chi
+\end{array}\right) & = & V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)-\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)^{\top}\left(\begin{array}{c}
+v_{x_{t}}\\
+v_{y_{t}}
+\end{array}\right)\\
+V_{g}\cos\left(\chi-\psi\right) & = & V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi\\
+\chi-\psi & = & \cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)\\
+\chi & = & \psi+\cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Similarly,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+V_{g} & = & \norm{V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)-\Vt}\\
+ & = & \sqrt{\left(V_{a}\cos\psi-v_{x_{t}}\right)^{2}+\left(V_{a}\sin\psi-v_{y_{t}}\right)^{2}}\;.
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We will converge to an orbit about the target when 
+\begin_inset Formula $\dot{\chi}=\frac{V_{g}}{R}$
+\end_inset
+
+, therefore, we can derive a feedforward term for our roll control according
+ to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\dot{\chi} & = & \frac{V_{g}}{R}\\
+ & = & \frac{g}{V_{g}}\tan\phi\\
+\phi_{ff} & = & \atan\left(\frac{V_{g}^{2}}{gR}\right)\\
+ & = & \atan\left(\frac{\norm{V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)+\Vw}^{2}}{gR_{d}}\right)\\
+ & = & \atan\left(\frac{\left(V_{a}\cos\psi-\vxtw\right)^{2}+\left(V_{a}\sin\psi-\vytw\right)^{2}}{gR_{d}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the UAV is in orbit, the roll command should match 
+\begin_inset Formula $\phi_{ff}$
+\end_inset
+
+ almost exactly.
+ But when the UAV is not in the proper orbit, we need to augment the roll
+ command to converge onto the proper orbit.
+ We do so by defining 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ to be the angle difference between the LOS vector and the heading vector,
+ 
+\begin_inset Formula $\Vg$
+\end_inset
+
+.
+ This can be defined as 
+\begin_inset Formula 
+\begin{eqnarray*}
+\gamma & = & \az+\psi-\chi\\
+ & = & \az-\left(\chi-\psi\right)\\
+ & = & \az-\cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In a perfect orbit, this angle will be 
+\begin_inset Formula $\lambda\frac{\pi}{2}$
+\end_inset
+
+, where 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ is the direction of the orbit.
+ But in order to converge to the proper orbit with the desired radius, we
+ must adjust our current 
+\begin_inset Formula $R$
+\end_inset
+
+ by controlling 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ to be larger in order to decrease 
+\begin_inset Formula $R$
+\end_inset
+
+ and smaller in order to increase 
+\begin_inset Formula $R$
+\end_inset
+
+.
+ We can control 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ using the roll command.
+ A negative roll command will increase 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ and a positive roll command will decrease it.
+ 
+\end_layout
+
+\begin_layout Standard
+The control law being implemented to achieve this is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi_{c} & = & \phi_{ff}+\left[k_{p_{R}}e_{R}\gamma+k_{d_{R}}\dot{e}_{R}\dot{\gamma}\right]+\left[k_{p_{\gamma}}e_{\gamma}+k_{d_{\gamma}}\dot{e}_{\gamma}\right]\\
+e_{R} & = & \begin{cases}
+\ln\left(\frac{R}{R_{d}}\right) & R\geq R_{d}\\
+\frac{1}{p}\left(\frac{R}{R_{d}}^{p}-1\right) & R<R_{d}
+\end{cases}\\
+e_{\gamma} & = & \gamma-\lambda\frac{\pi}{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Improved control:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi_{c} & = & \phi_{ff}+k_{p_{\gamma}}e_{\gamma}+k_{d_{\gamma}}\dot{e}_{\gamma}\\
+e_{\gamma} & = & \gamma-\lambda\left[\atan\left(-\beta\left(R-R_{d}\right)\right)+\frac{\pi}{2}\right]
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We estimate the target velocity according to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{V_{g}} & = & \sqrt{\left|gR_{d}\tan\phi\right|}\\
+\hat{\chi} & = & \psi-\cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)\\
+\mathbf{\bar{V}_{t}} & = & \mathbf{V_{a}}-\mathbf{\hat{V}_{g}}\\
+ & = & V_{a}\left(\begin{array}{c}
+\cos\psi\\
+\sin\psi
+\end{array}\right)-\hat{V_{g}}\left(\begin{array}{c}
+\cos\hat{\chi}\\
+\sin\hat{\chi}
+\end{array}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The measurement obtained using this model is then an input to a simple constant
+ velocity Kalman filter.
+\end_layout
+
+\end_body
+\end_document
