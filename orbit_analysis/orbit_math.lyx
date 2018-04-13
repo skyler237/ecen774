@@ -758,9 +758,13 @@ Using the virtual wind dynamics,
 \cos\hat{\chi}\\
 \sin\hat{\chi}
 \end{array}\right)\\
-\hat{V}_{g} & = & \sqrt{gR\tan\phi}\\
+\hat{V}_{g} & = & \sqrt{gR_{d}\tan\phi}\\
 \hat{\chi} & = & \psi+e_{az}\\
-e_{az} & = & \left|\az\right|-\frac{\pi}{2}-\gamma\cos^{-1}\left(\frac{V_{a}-x_{w}\cos\psi-\vytw\sin\psi}{V_{g}}\right)
+e_{az} & = & \left|\az\right|-\frac{\pi}{2}-\gamma\cos^{-1}\left(\frac{V_{a}-\vxtw\cos\psi-\vytw\sin\psi}{V_{g}}\right)\\
+\gamma & = & -\lambda\text{sgn}\left(\Vt^{\top}\left(\begin{array}{c}
+-\sin\psi\\
+\cos\psi
+\end{array}\right)\right)
 \end{eqnarray*}
 
 \end_inset

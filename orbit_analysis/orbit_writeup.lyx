@@ -69,10 +69,6 @@
 \begin_body
 
 \begin_layout Standard
-Math Macros:
-\end_layout
-
-\begin_layout Standard
 \begin_inset FormulaMacro
 \newcommand{\atan}{\tan^{-1}}
 \end_inset
@@ -118,22 +114,6 @@ Math Macros:
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset line
-LatexCommand rule
-offset "0.5ex"
-width "100col%"
-height "1pt"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Variable Macros:
 \end_layout
 
 \begin_layout Standard
@@ -267,18 +247,6 @@ Variable Macros:
 \begin_layout Standard
 \begin_inset FormulaMacro
 \newcommand{\u}{\mathbf{u}}
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset line
-LatexCommand rule
-offset "0.5ex"
-width "100col%"
-height "1pt"
-
 \end_inset
 
 
@@ -470,7 +438,7 @@ v_{y_{t}}
 \end{array}\right)\\
 V_{g}\cos\left(\chi-\psi\right) & = & V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi\\
 \chi-\psi & = & \cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)\\
-\chi & = & \psi+\cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)
+\chi & = & \psi+\cos^{-1}\left(\frac{V_{a}-v_{x_{t}}\cos\psi-v_{y_{t}}\sin\psi}{V_{g}}\right)\;.
 \end{eqnarray*}
 
 \end_inset
@@ -497,6 +465,10 @@ V_{g} & = & \norm{V_{a}\left(\begin{array}{c}
 
 \end_layout
 
+\begin_layout Section
+Control Implementation
+\end_layout
+
 \begin_layout Standard
 We will converge to an orbit about the target when 
 \begin_inset Formula $\dot{\chi}=\frac{V_{g}}{R}$
@@ -516,7 +488,7 @@ We will converge to an orbit about the target when
 \cos\psi\\
 \sin\psi
 \end{array}\right)+\Vw}^{2}}{gR_{d}}\right)\\
- & = & \atan\left(\frac{\left(V_{a}\cos\psi-\vxtw\right)^{2}+\left(V_{a}\sin\psi-\vytw\right)^{2}}{gR_{d}}\right)
+ & = & \atan\left(\frac{\left(V_{a}\cos\psi-\vxtw\right)^{2}+\left(V_{a}\sin\psi-\vytw\right)^{2}}{gR_{d}}\right)\;.
 \end{eqnarray*}
 
 \end_inset
@@ -574,57 +546,33 @@ In a perfect orbit, this angle will be
 \begin_inset Formula $\gamma$
 \end_inset
 
- to be larger in order to decrease 
-\begin_inset Formula $R$
-\end_inset
-
- and smaller in order to increase 
-\begin_inset Formula $R$
+ away from 
+\begin_inset Formula $\lambda\frac{\pi}{2}$
 \end_inset
 
 .
- We can control 
+ If we need to decrease the current radius, we want to drive 
 \begin_inset Formula $\gamma$
 \end_inset
 
- using the roll command.
- A negative roll command will increase 
+ to zero and if we want to increase the orbit radius, we want to drive 
 \begin_inset Formula $\gamma$
 \end_inset
 
- and a positive roll command will decrease it.
- 
-\end_layout
-
-\begin_layout Standard
-The control law being implemented to achieve this is
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-\phi_{c} & = & \phi_{ff}+\left[k_{p_{R}}e_{R}\gamma+k_{d_{R}}\dot{e}_{R}\dot{\gamma}\right]+\left[k_{p_{\gamma}}e_{\gamma}+k_{d_{\gamma}}\dot{e}_{\gamma}\right]\\
-e_{R} & = & \begin{cases}
-\ln\left(\frac{R}{R_{d}}\right) & R\geq R_{d}\\
-\frac{1}{p}\left(\frac{R}{R_{d}}^{p}-1\right) & R<R_{d}
-\end{cases}\\
-e_{\gamma} & = & \gamma-\lambda\frac{\pi}{2}
-\end{eqnarray*}
-
+ to 
+\begin_inset Formula $\pi$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Improved control:
+.
+ The resulting controller is
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
 \phi_{c} & = & \phi_{ff}+k_{p_{\gamma}}e_{\gamma}+k_{d_{\gamma}}\dot{e}_{\gamma}\\
-e_{\gamma} & = & \gamma-\lambda\left[\atan\left(-\beta\left(R-R_{d}\right)\right)+\frac{\pi}{2}\right]
+e_{\gamma} & = & \gamma-\gamma_{d}\\
+\gamma_{d} & = & \lambda\left[\atan\left(-\beta\left(R-R_{d}\right)\right)+\frac{\pi}{2}\right]\;,
 \end{eqnarray*}
 
 \end_inset
@@ -633,7 +581,36 @@ e_{\gamma} & = & \gamma-\lambda\left[\atan\left(-\beta\left(R-R_{d}\right)\right
 \end_layout
 
 \begin_layout Standard
-We estimate the target velocity according to
+where the desired value for 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ is dependent upon our current radius, approaching 0 or 
+\begin_inset Formula $\pi$
+\end_inset
+
+ at when the radius error is large and converging to 
+\begin_inset Formula $\frac{\pi}{2}$
+\end_inset
+
+ as the radius error goes to zero.
+\end_layout
+
+\begin_layout Standard
+In order to compute 
+\begin_inset Formula $V_{g}$
+\end_inset
+
+ and 
+\begin_inset Formula $\chi$
+\end_inset
+
+ we must estimate the target velocity.
+ We initially assume that the target velocity and allow the reactive PD
+ portion of our control approximate the appropriate trajectory for a constant
+ radius orbit about the moving target.
+ When the radius error is sufficiently small, we can use the output of our
+ control to extract measurements of the target velocity according to
 \end_layout
 
 \begin_layout Standard
@@ -648,7 +625,7 @@ We estimate the target velocity according to
 \end{array}\right)-\hat{V_{g}}\left(\begin{array}{c}
 \cos\hat{\chi}\\
 \sin\hat{\chi}
-\end{array}\right)
+\end{array}\right)\;.
 \end{eqnarray*}
 
 \end_inset
