@@ -4,3 +4,11 @@
 *.lyx~
 
 *.pyc
+
+controller/__MACOSX/
+
+controller/python/\.DS_Store
+
+controller/python/\.idea/
+
+controller/python/hw_a/\.DS_Store
